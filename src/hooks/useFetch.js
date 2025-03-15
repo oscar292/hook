@@ -1,8 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export const useFetch = (url) => {
 
+    const isMounted = useRef(true);
     const [state, setSate]=useState({data: null, loading:true, error: null});
+
+    useEffect(()=>{
+        return ()=>{
+            isMounted.current = false;
+        }
+    },[])
 
     useEffect(()=>{
 
@@ -11,27 +18,33 @@ export const useFetch = (url) => {
         const fetchData = async () =>{
 
             try {
-                const resp = await fetch(url);
-                
+
+                const resp = await fetch(url);                
+
                 if(!resp.ok){
-                    throw new Error('La url no esta respondiendo');
+                    throw new Error('La URL no esta respondiendo');
                 }
 
                 const data = await resp.json();
-                setSate({
-                    data,
-                    loading: false,
-                    error:null
-                });
-                
+
+                if(isMounted.current){
+                    setSate({
+                        data,
+                        loading: false,
+                        error:null
+                    });
+                }else{
+                    console.log('setSate no se llamo');
+                }
+
             }catch(error){
+
                 setSate({data:null,loading: false, error: error.message})
+                
             }
         }
-
         fetchData();
-
-    },[url])
+    }, [url])
 
     return state;
 
