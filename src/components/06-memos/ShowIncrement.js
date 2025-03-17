@@ -1,7 +1,6 @@
 import React from 'react'
 
 export const ShowIncrement = ({increment}) => {
-
     console.log('Me volvi a generar');
     return (
         <button
