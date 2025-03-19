@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from 'react'
 import { todoReducer } from './todoRefucer';
-import { useForm } from '../../hooks/useForm';
 import { TodoList} from './todoList'; 
+import { TodoAdd } from './TodoAdd';
 import "./style.css";
 
 const init = ()=>{
@@ -12,15 +12,12 @@ export const TodoApp = () => {
 
     const [todos, dispach] = useReducer(todoReducer, [], init);
 
-    const [{description}, handleInputChange, reset] = useForm({
-       description : ''
-    })
-
     useEffect(()=>{
         localStorage.setItem('todos',JSON.stringify(todos));
     }, [todos]);
 
     const handleDelete = (todoId)=>{
+        
         const action = {
             type :'delete', 
             payload: todoId
@@ -35,27 +32,13 @@ export const TodoApp = () => {
         });        
     }
 
-    const handleSubmit = (e) =>{
-
-        e.preventDefault();
-        if(description.trim().length<=1){
-            return;
-        }
-
-        const newTodo = {
-            id: new Date().getTime(),
-            desc: description, 
-            done: false
-        };
-
-        const action = {
+    const handleAddTodo = (newTodo)=>{
+        
+        dispach ({
             type: 'add',
             payload: newTodo
-        }
+        })
 
-        dispach(action);
-        reset();
-        
     }
 
     return (
@@ -71,28 +54,10 @@ export const TodoApp = () => {
                         handleToggle={ handleToggle}
                     />
                 </div>
-
                 <div className='col-5'>
-                    <h4>Agregar Todo</h4>
-                    <hr/>
-                    <form onSubmit={handleSubmit}>
-                        <input
-                            type='text'
-                            name="description"
-                            className='form-control'
-                            placeholder='Aprender .....'
-                            autoComplete='off'
-                            value= {description}
-                            onChange={handleInputChange}
-                        />
-                        <button
-                            type="submit"
-                            className='btn btn-outline-primary mt-1 btn-block'
-                        >
-                            Agregar
-                        </button>
-                    </form>
-                    Agregar
+                    < TodoAdd 
+                        handleAddTodo= {handleAddTodo}
+                    />
                 </div>
             </div>
         </div>
